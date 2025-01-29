@@ -1,5 +1,6 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
+#include <cmath>
 
 #include <iostream>
 
@@ -12,15 +13,18 @@ const unsigned int SCR_HEIGHT = 600;
 
 const char *vertexShaderSource = "#version 330 core\n"
     "layout (location = 0) in vec3 aPos;\n"
+    "out vec4 vertexColor;\n"
     "void main()\n"
     "{\n"
-    "   gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
+    "   gl_Position = vec4(aPos, 1.0);\n"
+    "vertexColor = vec4(0.5, 0.0, 0.0, 1.0);\n"
     "}\0";
 const char *fragmentShaderSource = "#version 330 core\n"
     "out vec4 FragColor;\n"
+    "uniform vec4 myColor;\n"
     "void main()\n"
     "{\n"
-    "   FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n"
+    "   FragColor = myColor;\n"
     "}\n\0";
 
 int main()
@@ -147,6 +151,7 @@ int main()
 
     // render loop
     // -----------
+    float time = 0.0f;
     while (!glfwWindowShouldClose(window))
     {
         // input
@@ -155,11 +160,20 @@ int main()
 
         // render
         // ------
-        glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
+        // Calculate RGB values based on sine and cosine functions
+        float r = (sin(time) + 1.0f) / 2.0f;
+        float g = (sin(time + 2.0f) + 1.0f) / 2.0f;
+        float b = (sin(time + 4.0f) + 1.0f) / 2.0f;
+
+        glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+        time += 0.01f;
         // draw our first triangle
         glUseProgram(shaderProgram);
+        float timeValue = glfwGetTime();
+        int vertexColorLocation = glGetUniformLocation(shaderProgram, "myColor");
+        glUniform4f(vertexColorLocation, r, g, b, 1.0f);
         glBindVertexArray(VAO[0]); // seeing as we only have a single VAO there's no need to bind it every time, but we'll do so to keep things a bit more organized
         //glDrawArrays(GL_TRIANGLES, 0, 3);
         glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, NULL);
@@ -172,6 +186,7 @@ int main()
         // -------------------------------------------------------------------------------
         glfwSwapBuffers(window);
         glfwPollEvents();
+
     }
 
     // optional: de-allocate all resources once they've outlived their purpose:
