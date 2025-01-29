@@ -3,6 +3,7 @@ NAME = scop
 CPPFLAGS	= -Iinclude
 LDFLAGS		= -lglfw -ldl -lGL
 SRC 		=	src/glad.c \
+				src/Shader.cpp \
 				src/main.cpp
 
 OBJ = $(SRC:.cpp=.o)
