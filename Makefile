@@ -1,30 +1,51 @@
-NAME = scop
+NAME			=	scop
 
-CPPFLAGS	= -Iinclude
-LDFLAGS		= -lglfw -ldl -lGL
-SRC 		=	src/glad.c \
-				src/main.cpp
+INCLUDEFLAGS	=	-Ilib -Iinclude -Ilib/assimp_local/include
+LDFLAGS			=	-lglfw -ldl -lGL -lz -Llib/assimp_local/lib -lassimp
 
-OBJ = $(SRC:.cpp=.o)
-OBJ := $(OBJ:.c=.o)
-CXX = g++
-RM = rm -rf
+SRC				=	lib/glad/glad.c \
+					lib/stb_images/stb_image.c \
 
-all: $(NAME)
+SRC 			+=	src/Utils.cpp \
+					src/Window.cpp \
+					src/Shader.cpp \
+					src/Camera.cpp \
+					src/Mesh.cpp \
+					src/Model.cpp \
+					src/main.cpp
 
-$(NAME): $(OBJ)
-	$(CXX) $(OBJ) $(CPPFLAGS) $(LDFLAGS) -o $(NAME)
+OBJDIR			=	obj
+OBJ				=	$(SRC:%.cpp=$(OBJDIR)/%.o)
+OBJ				:=	$(OBJ:%.c=$(OBJDIR)/%.o)
 
-%.o: %.cpp
-	$(CXX) $(CPPFLAGS) -c $< -o $@
+CXX				=	c++
+CC				=	gcc
 
-%.o: %.c
-	$(CXX) $(CPPFLAGS) -c $< -o $@
+RM				=	rm -rf
 
+all:	$(NAME)
+
+$(NAME):	$(OBJ)
+	$(CXX)	$(OBJ)	$(INCLUDEFLAGS)	$(LDFLAGS)	-o	$(NAME)
+
+$(OBJDIR)/%.o: %.cpp
+	@mkdir -p $(dir $@)
+	$(CXX) $(INCLUDEFLAGS) -c $< -o $@
+
+$(OBJDIR)/%.o: %.c
+	@mkdir -p $(dir $@)
+	$(CC) $(INCLUDEFLAGS) -c $< -o $@
+
+c: clean
 clean:
-	@$(RM) $(OBJ)
+	@$(RM) $(OBJDIR)/*
 
+fc: fclean
 fclean: clean
 	@$(RM) $(NAME)
 
 re: fclean all
+
+run : all
+	./$(NAME)
+.PHONY: all c clean fc fclean re run
