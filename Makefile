@@ -86,14 +86,13 @@ release: $(OBJ)
 	@mkdir -p "$(RELEASE_DIR)"
 
 	@echo "🔹 Copying game binary..."
-	@$(CXX)	$(OBJ)	$(INCLUDEFLAGS)	$(LDFLAGS) $(RELEASE_FLAGS)	-o	$(NAME)
-	@cp "$(NAME)" "$(RELEASE_DIR)/"
+	@$(CXX)	$(OBJ)	$(INCLUDEFLAGS)	$(LDFLAGS) $(RELEASE_FLAGS)	-o	$(RELEASE_DIR)/$(NAME)
 
 ifeq ($(OS),Windows_NT)
 	@echo "🔹 Copying required DLLs..."
 	@for dll in $(DLL_LIST); do \
-		DLL_PATH=$$(where $$dll 2>NUL | head -n 1); \
-		if [ -n "$$DLL_PATH" ]; then \
+		DLL_PATH=$$(where $$dll 2>&1); \
+		if [ -n "$$DLL_PATH" ] && [ "$$DLL_PATH" != "nul" ]; then \
 			cp "$$DLL_PATH" "$(RELEASE_DIR)/"; \
 		else \
 			echo "⚠️ Warning: $$dll is missing!"; \
@@ -117,4 +116,14 @@ endif
 	@mkdir -p "$(RELEASE_DIR)/lib"
 	@cp -r $(Shader_DIR) "$(RELEASE_DIR)/lib" 2>/dev/null || echo "⚠️ Warning: Some shaders may be missing!"
 	@echo "✅ Release build is ready in '$(RELEASE_DIR)'!"
-.PHONY: all c clean fc fclean re run
+
+rc: releaseclean
+
+releaseclean:
+	@$(RM) $(RELEASE_DIR)
+
+rr: rerelease
+
+rerelease: rc release
+
+.PHONY: all c clean fc fclean re run print release rc releaseclean rr rerelease
