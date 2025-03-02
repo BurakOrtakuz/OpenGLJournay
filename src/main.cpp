@@ -159,7 +159,6 @@ int main()
         // be sure to activate shader when setting uniforms/drawing objects
         lightShader.use();
         lightShader.setVec3("light.position", lightPos);
-		lightShader.setVec3("light.direction", -0.2f, -1.0f, -0.3f);
         lightShader.setVec3("viewPos", camera.getPosition());
 
         // light properties
@@ -167,6 +166,9 @@ int main()
         lightShader.setVec3("light.diffuse", 0.5f, 0.5f, 0.5f);
         lightShader.setVec3("light.specular", 1.0f, 1.0f, 1.0f);
 
+		lightShader.setFloat("light.constant",  1.0f);
+		lightShader.setFloat("light.linear",    0.09f);
+		lightShader.setFloat("light.quadratic", 0.032f);	  
         // material properties
         lightShader.setVec3("material.specular", 0.5f, 0.5f, 0.5f);
         lightShader.setFloat("material.shininess", 64.0f);
