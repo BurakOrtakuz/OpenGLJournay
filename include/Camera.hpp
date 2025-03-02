@@ -48,10 +48,11 @@ public:
 	void processKeyboard(Camera_Movement direction, float deltaTime);
 	void processMouseMovement(float xoffset, float yoffset, GLboolean constrainPitch = true);
 	void processMouseScroll(float yoffset);
+
 	glm::mat4 getViewMatrix() const;
 	float getZoom() const;
 	glm::vec3 getPosition() const;
-
+	glm::vec3 getFront() const;
 };
 
 #endif // CAMERA_HPP

@@ -158,7 +158,10 @@ int main()
 
         // be sure to activate shader when setting uniforms/drawing objects
         lightShader.use();
-        lightShader.setVec3("light.position", lightPos);
+        lightShader.setVec3("light.position", camera.getPosition());
+		lightShader.setVec3("light.direction", camera.getFront());
+		lightShader.setFloat("light.cutOff", glm::cos(glm::radians(12.5f)));
+
         lightShader.setVec3("viewPos", camera.getPosition());
 
         // light properties
